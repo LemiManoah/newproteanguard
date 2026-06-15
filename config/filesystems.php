@@ -47,6 +47,20 @@ return [
             'report' => false,
         ],
 
+        'client_documents' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/clients'),
+            'throw' => false,
+            'report' => false,
+        ],
+
+        'guard_documents' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/guards'),
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

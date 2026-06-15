@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    'sms' => [
+        'provider' => env('SMS_PROVIDER', 'speedamobile'),
+        'url' => env('SMS_API_URL'),
+        'api_id' => env('SMS_API_ID'),
+        'api_password' => env('SMS_API_PASSWORD'),
+        'sender_id' => env('SMS_SENDER_ID'),
+    ],
+
 ];
