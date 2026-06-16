@@ -45,7 +45,7 @@ class ClientGuard extends Model
         return $this->belongsTo(Client::class, 'clientId');
     }
 
-    public function guard(): BelongsTo
+    public function securityGuard(): BelongsTo
     {
         return $this->belongsTo(SecurityGuard::class, 'guardId');
     }

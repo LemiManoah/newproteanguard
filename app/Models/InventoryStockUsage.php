@@ -40,7 +40,7 @@ class InventoryStockUsage extends Model
         return $this->belongsTo(InventoryItem::class, 'itemId');
     }
 
-    public function guard(): BelongsTo
+    public function securityGuard(): BelongsTo
     {
         return $this->belongsTo(SecurityGuard::class, 'guardId');
     }

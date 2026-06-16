@@ -56,7 +56,7 @@ class Staff extends Model
         return $this->belongsTo(StaffPosition::class, 'positionId');
     }
 
-    public function guard(): BelongsTo
+    public function securityGuard(): BelongsTo
     {
         return $this->belongsTo(SecurityGuard::class, 'guardId');
     }

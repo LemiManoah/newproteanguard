@@ -32,7 +32,7 @@ class GuardReferee extends Model
         ];
     }
 
-    public function guard(): BelongsTo
+    public function securityGuard(): BelongsTo
     {
         return $this->belongsTo(SecurityGuard::class, 'guardId');
     }

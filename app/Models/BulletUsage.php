@@ -36,7 +36,7 @@ class BulletUsage extends Model
         return $this->belongsTo(Gun::class, 'gunId');
     }
 
-    public function guard(): BelongsTo
+    public function securityGuard(): BelongsTo
     {
         return $this->belongsTo(SecurityGuard::class, 'guardId');
     }
