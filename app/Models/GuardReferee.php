@@ -6,15 +6,17 @@ use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'action',
+    'guardId',
+    'name',
+    'contact',
+    'residence',
 ])]
-class AuditLog extends Model
+class GuardReferee extends Model
 {
     use BelongsToBusiness, HasFactory;
-
-    protected $table = 'logs';
 
     protected $attributes = [
         'status' => true,
@@ -23,9 +25,15 @@ class AuditLog extends Model
     protected function casts(): array
     {
         return [
+            'guardId' => 'integer',
             'status' => 'boolean',
             'userId' => 'integer',
             'businessId' => 'integer',
         ];
+    }
+
+    public function guard(): BelongsTo
+    {
+        return $this->belongsTo(SecurityGuard::class, 'guardId');
     }
 }

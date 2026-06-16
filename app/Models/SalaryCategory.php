@@ -6,15 +6,15 @@ use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'action',
+    'name',
+    'daily_amount',
 ])]
-class AuditLog extends Model
+class SalaryCategory extends Model
 {
     use BelongsToBusiness, HasFactory;
-
-    protected $table = 'logs';
 
     protected $attributes = [
         'status' => true,
@@ -23,9 +23,15 @@ class AuditLog extends Model
     protected function casts(): array
     {
         return [
+            'daily_amount' => 'decimal:2',
             'status' => 'boolean',
-            'userId' => 'integer',
             'businessId' => 'integer',
+            'userId' => 'integer',
         ];
+    }
+
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class, 'salaryCategoryId');
     }
 }

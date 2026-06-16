@@ -6,26 +6,30 @@ use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'action',
+    'gunId',
+    'date',
+    'work_by',
+    'description',
 ])]
-class AuditLog extends Model
+class GunMaintenance extends Model
 {
     use BelongsToBusiness, HasFactory;
-
-    protected $table = 'logs';
-
-    protected $attributes = [
-        'status' => true,
-    ];
 
     protected function casts(): array
     {
         return [
-            'status' => 'boolean',
-            'userId' => 'integer',
+            'gunId' => 'integer',
+            'date' => 'date',
             'businessId' => 'integer',
+            'userId' => 'integer',
         ];
+    }
+
+    public function gun(): BelongsTo
+    {
+        return $this->belongsTo(Gun::class, 'gunId');
     }
 }

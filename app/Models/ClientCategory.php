@@ -6,15 +6,14 @@ use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'action',
+    'name',
 ])]
-class AuditLog extends Model
+class ClientCategory extends Model
 {
     use BelongsToBusiness, HasFactory;
-
-    protected $table = 'logs';
 
     protected $attributes = [
         'status' => true,
@@ -27,5 +26,10 @@ class AuditLog extends Model
             'userId' => 'integer',
             'businessId' => 'integer',
         ];
+    }
+
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class, 'categoryId');
     }
 }

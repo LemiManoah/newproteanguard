@@ -6,33 +6,43 @@ use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'name',
-    'start',
-    'end',
-    'Active',
+    'gunId',
+    'guardId',
+    'start_date',
+    'end_date',
+    'description',
 ])]
-class FinancialYear extends Model
+class GunAssignment extends Model
 {
     use BelongsToBusiness, HasFactory;
 
-    protected $table = 'fyears';
-
     protected $attributes = [
         'status' => true,
-        'Active' => true,
     ];
 
     protected function casts(): array
     {
         return [
-            'start' => 'date',
-            'end' => 'date',
+            'gunId' => 'integer',
+            'guardId' => 'integer',
+            'start_date' => 'date',
+            'end_date' => 'date',
             'status' => 'boolean',
-            'Active' => 'boolean',
             'businessId' => 'integer',
             'userId' => 'integer',
         ];
+    }
+
+    public function gun(): BelongsTo
+    {
+        return $this->belongsTo(Gun::class, 'gunId');
+    }
+
+    public function guard(): BelongsTo
+    {
+        return $this->belongsTo(SecurityGuard::class, 'guardId');
     }
 }

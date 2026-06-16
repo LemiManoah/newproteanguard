@@ -6,33 +6,33 @@ use App\Models\Concerns\BelongsToBusiness;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
-    'name',
-    'start',
-    'end',
-    'Active',
+    'staffId',
+    'month',
+    'year',
+    'amount',
+    'description',
 ])]
-class FinancialYear extends Model
+class SalaryDeduction extends Model
 {
     use BelongsToBusiness, HasFactory;
-
-    protected $table = 'fyears';
-
-    protected $attributes = [
-        'status' => true,
-        'Active' => true,
-    ];
 
     protected function casts(): array
     {
         return [
-            'start' => 'date',
-            'end' => 'date',
-            'status' => 'boolean',
-            'Active' => 'boolean',
+            'staffId' => 'integer',
+            'month' => 'integer',
+            'year' => 'integer',
+            'amount' => 'decimal:2',
             'businessId' => 'integer',
             'userId' => 'integer',
         ];
+    }
+
+    public function staff(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class, 'staffId');
     }
 }
