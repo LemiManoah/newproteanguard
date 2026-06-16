@@ -12,6 +12,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string|null $code
+ * @property string|null $fname
+ * @property string|null $lname
+ * @property string|null $contact1
+ * @property string|null $id_no
+ * @property bool $status
+ * @property bool $assigned
+ * @property int|null $userId
+ * @property int $businessId
+ */
 #[Fillable([
     'code_number',
     'code',

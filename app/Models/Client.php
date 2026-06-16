@@ -11,6 +11,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $contact1
+ * @property string|null $email
+ * @property numeric-string|float|int $amount
+ * @property numeric-string|float|int $no_guards
+ * @property numeric-string|float|int|null $actual_guards
+ * @property bool $status
+ * @property bool $assigned
+ * @property int|null $userId
+ * @property int $businessId
+ */
 #[Fillable([
     'categoryId',
     'name',

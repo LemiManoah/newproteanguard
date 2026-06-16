@@ -9,7 +9,19 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $clientId
+ * @property int $guardId
+ * @property Carbon|null $from
+ * @property Carbon|null $to
+ * @property bool $status
+ * @property ScheduleType $schedule_type
+ * @property int|null $userId
+ * @property int $businessId
+ */
 #[Fillable([
     'clientId',
     'guardId',

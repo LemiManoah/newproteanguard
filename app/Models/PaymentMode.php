@@ -8,6 +8,15 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string|null $name
+ * @property string|null $account
+ * @property bool $status
+ * @property bool $is_default
+ * @property int|null $businessId
+ * @property int|null $userId
+ */
 #[Fillable([
     'name',
     'type',

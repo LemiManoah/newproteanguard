@@ -10,7 +10,22 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int|null $deploymentId
+ * @property int|null $clientId
+ * @property int|null $guardId
+ * @property int|null $replacedBy
+ * @property Carbon|null $date
+ * @property ScheduleType $schedule_type
+ * @property AttendanceStatus $attended
+ * @property AbsenceCategory|null $absentCategory
+ * @property string|null $reason
+ * @property int|null $userId
+ * @property int $businessId
+ */
 #[Fillable([
     'deploymentId',
     'clientId',
