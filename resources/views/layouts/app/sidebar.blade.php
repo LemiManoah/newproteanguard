@@ -12,23 +12,67 @@
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:sidebar.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
+
+                    @if (auth()->user()?->role?->view_users)
+                        <flux:sidebar.item icon="layout-grid" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
+                            {{ __('Users') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()?->role?->manage_permission)
+                        <flux:sidebar.item icon="folder-git-2" :href="route('roles.index')" :current="request()->routeIs('roles.*')" wire:navigate>
+                            {{ __('Roles') }}
+                        </flux:sidebar.item>
+
+                        <flux:sidebar.item icon="book-open-text" :href="route('permissions.index')" :current="request()->routeIs('permissions.*')" wire:navigate>
+                            {{ __('Permissions') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()?->role?->view_paymodes)
+                        <flux:sidebar.item icon="folder-git-2" :href="route('modes.index')" :current="request()->routeIs('modes.*')" wire:navigate>
+                            {{ __('Payment Modes') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()?->role?->view_logs)
+                        <flux:sidebar.item icon="book-open-text" :href="route('audits.index')" :current="request()->routeIs('audits.*')" wire:navigate>
+                            {{ __('Audit Logs') }}
+                        </flux:sidebar.item>
+                    @endif
+                </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Operations')" class="grid">
+                    @if (auth()->user()?->role?->view_clients)
+                        <flux:sidebar.item icon="layout-grid" :href="route('clients.index')" :current="request()->routeIs('clients.*')" wire:navigate>
+                            {{ __('Clients') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()?->role?->view_guards)
+                        <flux:sidebar.item icon="folder-git-2" :href="route('guards.index')" :current="request()->routeIs('guards.*')" wire:navigate>
+                            {{ __('Guards') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()?->role?->assign_guards)
+                        <flux:sidebar.item icon="book-open-text" :href="route('assignments.index')" :current="request()->routeIs('assignments.*')" wire:navigate>
+                            {{ __('Assignments') }}
+                        </flux:sidebar.item>
+                    @endif
+
+                    @if (auth()->user()?->role?->manage_attendance)
+                        <flux:sidebar.item icon="layout-grid" :href="route('attendance.index')" :current="request()->routeIs('attendance.*')" wire:navigate>
+                            {{ __('Attendance') }}
+                        </flux:sidebar.item>
+                    @endif
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <flux:spacer />
-
-            <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
-                </flux:sidebar.item>
-            </flux:sidebar.nav>
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
