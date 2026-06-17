@@ -11,14 +11,28 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int|null $code_number
  * @property string|null $code
  * @property string|null $fname
  * @property string|null $lname
  * @property string|null $contact1
+ * @property string|null $contact2
+ * @property string|null $email
+ * @property Carbon|null $dob
+ * @property Carbon|null $join_date
+ * @property GuardGender $gender
+ * @property MaritalStatus $marital_status
+ * @property string|null $address
+ * @property string|null $nok
+ * @property string|null $nok_contact
+ * @property string|null $nok_relationship
+ * @property IdentityDocumentType $id_type
  * @property string|null $id_no
+ * @property Carbon|null $id_expiry
  * @property bool $status
  * @property bool $assigned
  * @property int|null $userId

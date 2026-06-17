@@ -1,7 +1,11 @@
 <section class="flex h-full w-full flex-1 flex-col gap-6">
-    <div>
-        <flux:heading size="xl">{{ __('Security Guards') }}</flux:heading>
-        <flux:text>{{ __('Guard roster and current deployment state.') }}</flux:text>
+    <div class="flex items-start justify-between gap-4">
+        <div>
+            <flux:heading size="xl">{{ __('Security Guards') }}</flux:heading>
+            <flux:text>{{ __('Guard roster and current deployment state.') }}</flux:text>
+        </div>
+
+        <flux:button :href="route('guards.create')" variant="primary" wire:navigate>{{ __('New Guard') }}</flux:button>
     </div>
 
     <flux:table>
@@ -11,7 +15,7 @@
             <flux:table.column>{{ __('Contact') }}</flux:table.column>
             <flux:table.column>{{ __('Gender') }}</flux:table.column>
             <flux:table.column>{{ __('Deployments') }}</flux:table.column>
-            <flux:table.column>{{ __('Status') }}</flux:table.column>
+            <flux:table.column>{{ __('Actions') }}</flux:table.column>
         </flux:table.columns>
 
         <flux:table.rows>
@@ -25,7 +29,9 @@
                     <flux:table.cell>{{ $guard->contact1 }}</flux:table.cell>
                     <flux:table.cell>{{ $guard->gender?->label() }}</flux:table.cell>
                     <flux:table.cell>{{ $guard->active_clients_count }}</flux:table.cell>
-                    <flux:table.cell>{{ $guard->assigned ? __('Assigned') : __('Available') }}</flux:table.cell>
+                    <flux:table.cell>
+                        <flux:button :href="route('guards.edit', $guard)" size="sm" wire:navigate>{{ __('Open') }}</flux:button>
+                    </flux:table.cell>
                 </flux:table.row>
             @endforeach
         </flux:table.rows>

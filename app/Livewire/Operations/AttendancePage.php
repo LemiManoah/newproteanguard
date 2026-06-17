@@ -4,7 +4,6 @@ namespace App\Livewire\Operations;
 
 use App\Enums\AbsenceCategory;
 use App\Enums\AttendanceStatus;
-use App\Enums\ScheduleType;
 use App\Models\ClientGuard;
 use App\Models\ClientGuardAttendance;
 use App\Services\AuditService;
@@ -72,9 +71,6 @@ class AttendancePage extends Component
             ->where('status', true)
             ->findOrFail($validated['deploymentId']);
 
-        $scheduleType = $deployment->schedule_type;
-        $scheduleTypeValue = $scheduleType instanceof ScheduleType ? $scheduleType->value : (int) $scheduleType;
-
         $attendance = ClientGuardAttendance::query()
             ->firstOrNew([
                 'businessId' => $this->tenant->businessId(),
@@ -85,11 +81,12 @@ class AttendancePage extends Component
         $attendance->forceFill([
             'clientId' => $deployment->clientId,
             'guardId' => $deployment->guardId,
-            'schedule_type' => $scheduleTypeValue,
+            'schedule_type' => $deployment->schedule_type->value,
             'attended' => $validated['attended'],
             'absentCategory' => $validated['attended'] === AttendanceStatus::Absent->value ? $validated['absentCategory'] : null,
             'reason' => $validated['reason'],
             'userId' => $this->tenant->user()->getKey(),
+            'businessId' => $this->tenant->businessId(),
         ]);
         $attendance->save();
 

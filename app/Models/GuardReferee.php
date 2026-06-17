@@ -8,6 +8,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property int $id
+ * @property int $guardId
+ * @property string|null $name
+ * @property string|null $contact
+ * @property string|null $residence
+ * @property bool $status
+ * @property int|null $userId
+ * @property int $businessId
+ */
 #[Fillable([
     'guardId',
     'name',

@@ -7,7 +7,22 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int|null $clientId
+ * @property string|null $title
+ * @property int $type
+ * @property string|null $file
+ * @property string $disk
+ * @property string|null $path
+ * @property string|null $original_name
+ * @property bool $status
+ * @property int|null $userId
+ * @property int $businessId
+ * @property Carbon|null $created_at
+ */
 #[Fillable([
     'clientId',
     'title',

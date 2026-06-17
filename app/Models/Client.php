@@ -10,15 +10,25 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
+ * @property int $categoryId
  * @property string|null $name
  * @property string|null $contact1
+ * @property string|null $contact2
  * @property string|null $email
+ * @property string|null $id_no
+ * @property string|null $tin
+ * @property string|null $vat_no
+ * @property string|null $address
+ * @property BillingCycle $billing_cycle
  * @property numeric-string|float|int $amount
  * @property numeric-string|float|int $no_guards
  * @property numeric-string|float|int|null $actual_guards
+ * @property Carbon|null $bill_start
+ * @property ScheduleType $schedule_type
  * @property bool $status
  * @property bool $assigned
  * @property int|null $userId
