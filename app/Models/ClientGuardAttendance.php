@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $replacedBy
  * @property Carbon|null $date
  * @property ScheduleType $schedule_type
+ * @property bool $over_time
  * @property AttendanceStatus $attended
  * @property AbsenceCategory|null $absentCategory
  * @property string|null $reason
@@ -33,9 +34,12 @@ use Illuminate\Support\Carbon;
     'replacedBy',
     'date',
     'schedule_type',
+    'over_time',
     'attended',
     'absentCategory',
     'reason',
+    'userId',
+    'businessId',
 ])]
 class ClientGuardAttendance extends Model
 {
@@ -43,6 +47,7 @@ class ClientGuardAttendance extends Model
 
     protected $attributes = [
         'schedule_type' => 2,
+        'over_time' => false,
         'attended' => 1,
     ];
 
@@ -55,6 +60,7 @@ class ClientGuardAttendance extends Model
             'replacedBy' => 'integer',
             'date' => 'date',
             'schedule_type' => ScheduleType::class,
+            'over_time' => 'boolean',
             'attended' => AttendanceStatus::class,
             'absentCategory' => AbsenceCategory::class,
             'userId' => 'integer',

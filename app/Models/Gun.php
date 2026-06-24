@@ -51,4 +51,21 @@ class Gun extends Model
     {
         return $this->hasMany(BulletMovement::class, 'gunId');
     }
+
+    public function getAvailableBulletsAttribute(): int
+    {
+        if (! $this->bulletMovements()->exists()) {
+            return (int) ($this->bullets ?? 0);
+        }
+
+        $in = (int) $this->bulletMovements()->sum('quantity_in');
+        $out = (int) $this->bulletMovements()->sum('quantity_out');
+
+        return max(0, $in - $out);
+    }
+
+    public function getNameAttribute(): string
+    {
+        return trim(($this->mark_number ?? '').' '.($this->type ?? '').' '.($this->serial_number ?? ''));
+    }
 }

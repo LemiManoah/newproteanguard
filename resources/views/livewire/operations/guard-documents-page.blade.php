@@ -20,14 +20,14 @@
         </flux:table.columns>
 
         <flux:table.rows>
-            @foreach ($documents as $document)
-                <flux:table.row :key="$document->id">
-                    <flux:table.cell>{{ $document->securityGuard?->code }} - {{ trim(($document->securityGuard?->fname ?? '').' '.($document->securityGuard?->lname ?? '')) }}</flux:table.cell>
-                    <flux:table.cell>{{ $document->title }}</flux:table.cell>
-                    <flux:table.cell>{{ $document->original_name }}</flux:table.cell>
-                    <flux:table.cell>{{ $document->created_at?->toFormattedDateString() }}</flux:table.cell>
+            @foreach ($documents as $doc)
+                <flux:table.row :key="$doc->id">
+                    <flux:table.cell>{{ $doc->securityGuard?->code }} - {{ trim(($doc->securityGuard?->fname ?? '').' '.($doc->securityGuard?->lname ?? '')) }}</flux:table.cell>
+                    <flux:table.cell>{{ $doc->title }}</flux:table.cell>
+                    <flux:table.cell>{{ $doc->original_name }}</flux:table.cell>
+                    <flux:table.cell>{{ $doc->created_at?->toFormattedDateString() }}</flux:table.cell>
                     <flux:table.cell>
-                        <flux:button :href="route('guard-documents.download', $document)" size="sm">{{ __('Download') }}</flux:button>
+                        <flux:button :href="route('guard-documents.download', $doc)" size="sm">{{ __('Download') }}</flux:button>
                     </flux:table.cell>
                 </flux:table.row>
             @endforeach
@@ -41,11 +41,15 @@
                 <flux:text class="mt-2">{{ __('Files are stored on the private guard document disk.') }}</flux:text>
             </div>
 
-            <flux:select wire:model="guardId" label="{{ __('Guard') }}" placeholder="{{ __('Choose guard') }}">
-                @foreach ($guards as $guard)
-                    <flux:select.option value="{{ $guard->id }}">{{ $guard->code }} - {{ trim($guard->fname.' '.$guard->lname) }}</flux:select.option>
-                @endforeach
-            </flux:select>
+            <flux:field>
+                <flux:label>{{ __('Guard') }}</flux:label>
+                <x-searchable-select
+                    wire:model="guardId"
+                    :options="$guards"
+                    placeholder="Choose guard"
+                />
+                <flux:error name="guardId" />
+            </flux:field>
 
             <flux:input wire:model="title" label="{{ __('Title') }}" />
 

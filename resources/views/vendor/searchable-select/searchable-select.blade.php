@@ -37,8 +37,11 @@
         }
     }
 
+    $inlineDropdown = $attributes->has('dropdown-inline') || $attributes->has('inline-dropdown');
+
     $skipAttrs = ['options', 'option-value', 'option-label', 'placeholder', 'search-placeholder',
-        'empty-message', 'multiple', 'clearable', 'disabled', 'grouped', 'group-label', 'group-options'];
+        'empty-message', 'multiple', 'clearable', 'disabled', 'grouped', 'group-label', 'group-options',
+        'dropdown-inline', 'inline-dropdown'];
 @endphp
 
 @once
@@ -303,6 +306,7 @@
         disabled: {{ $disabled ? 'true' : 'false' }},
         grouped: {{ $grouped ? 'true' : 'false' }},
         wireModelKey: {{ json_encode($wireModelKey) }},
+        inlineDropdown: {{ $inlineDropdown ? 'true' : 'false' }},
         options: {{ json_encode($alpineOptions) }},
         labelsMap: {{ json_encode((object) $labelsMap) }},
     })"
@@ -391,7 +395,9 @@
 
     {{-- Dropdown panel teleported to <body> so it is never clipped by a parent
          stacking context, overflow:hidden, or transform on an ancestor element. --}}
+    @unless ($inlineDropdown)
     <template x-teleport="body">
+    @endunless
     <div
         x-show="isOpen"
         x-cloak
@@ -402,11 +408,12 @@
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         :style="{
-            position: 'fixed',
-            left:   dropdownX + 'px',
-            width:  dropdownWidth + 'px',
-            top:    dropdownOpenUpward ? 'auto' : (dropdownY + 'px'),
-            bottom: dropdownOpenUpward ? (dropdownBottom + 'px') : 'auto',
+            position: {{ $inlineDropdown ? "'absolute'" : "'fixed'" }},
+            left:   {{ $inlineDropdown ? "'0px'" : "dropdownX + 'px'" }},
+            right:  {{ $inlineDropdown ? "'0px'" : "'auto'" }},
+            width:  {{ $inlineDropdown ? "'100%'" : "dropdownWidth + 'px'" }},
+            top:    {{ $inlineDropdown ? "'calc(100% + 4px)'" : "dropdownOpenUpward ? 'auto' : (dropdownY + 'px')" }},
+            bottom: {{ $inlineDropdown ? "'auto'" : "dropdownOpenUpward ? (dropdownBottom + 'px') : 'auto'" }},
             zIndex: 9999,
         }"
         class="origin-top bg-white dark:bg-zinc-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg overflow-hidden"
@@ -483,5 +490,7 @@
             @endif
         </div>
     </div>
+    @unless ($inlineDropdown)
     </template>
+    @endunless
 </div>

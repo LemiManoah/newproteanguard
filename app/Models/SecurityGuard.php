@@ -154,4 +154,9 @@ class SecurityGuard extends Model
     {
         return $this->referees()->where('status', true);
     }
+
+    public function getNameAttribute(): string
+    {
+        return trim(($this->fname ?? '').' '.($this->lname ?? '')).' ('.($this->code ?? '').')';
+    }
 }

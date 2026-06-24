@@ -31,6 +31,8 @@ use Illuminate\Support\Carbon;
  * @property ScheduleType $schedule_type
  * @property bool $status
  * @property bool $assigned
+ * @property Carbon|null $left_date
+ * @property string|null $left_reason
  * @property int|null $userId
  * @property int $businessId
  */
@@ -50,6 +52,8 @@ use Illuminate\Support\Carbon;
     'actual_guards',
     'bill_start',
     'schedule_type',
+    'left_date',
+    'left_reason',
 ])]
 class Client extends Model
 {
@@ -75,6 +79,7 @@ class Client extends Model
             'schedule_type' => ScheduleType::class,
             'status' => 'boolean',
             'assigned' => 'boolean',
+            'left_date' => 'date',
             'categoryId' => 'integer',
             'userId' => 'integer',
             'businessId' => 'integer',

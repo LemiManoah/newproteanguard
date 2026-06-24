@@ -9,6 +9,7 @@ use App\Models\SecurityGuard;
 use App\Services\AuditService;
 use App\Services\PermissionService;
 use App\Support\TenantContext;
+use Flux\Flux;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -25,7 +26,7 @@ class AssignmentsPage extends Component
 
     public ?string $from = null;
 
-    public int $scheduleType = 2;
+    public ?int $scheduleType = null;
 
     protected TenantContext $tenant;
 
@@ -64,6 +65,18 @@ class AssignmentsPage extends Component
 
         $validated = $this->validate();
 
+        $alreadyAssigned = ClientGuard::query()
+            ->where('businessId', $this->tenant->businessId())
+            ->where('guardId', $validated['guardId'])
+            ->where('status', true)
+            ->exists();
+
+        if ($alreadyAssigned) {
+            Flux::toast(variant: 'danger', text: __('This guard already has an active deployment.'));
+
+            return;
+        }
+
         DB::transaction(function () use ($validated): void {
             $client = Client::query()
                 ->where('businessId', $this->tenant->businessId())
@@ -74,18 +87,6 @@ class AssignmentsPage extends Component
                 ->where('businessId', $this->tenant->businessId())
                 ->where('status', true)
                 ->findOrFail($validated['guardId']);
-
-            $alreadyAssigned = ClientGuard::query()
-                ->where('businessId', $this->tenant->businessId())
-                ->where('guardId', $guard->getKey())
-                ->where('status', true)
-                ->exists();
-
-            if ($alreadyAssigned) {
-                $this->addError('guardId', __('This guard already has an active deployment.'));
-
-                return;
-            }
 
             $deployment = new ClientGuard;
             $deployment->forceFill([
@@ -112,7 +113,10 @@ class AssignmentsPage extends Component
             $this->audit->record("Assigned guard {$guard->code} to client {$client->name}", $this->tenant->user());
         });
 
-        $this->reset('guardId');
+        $this->reset('guardId', 'clientId', 'scheduleType');
+        $this->from = now()->toDateString();
+
+        Flux::toast(variant: 'success', text: __('Guard assigned successfully.'));
     }
 
     public function render(): View
@@ -123,6 +127,7 @@ class AssignmentsPage extends Component
             'clients' => Client::query()
                 ->where('businessId', $this->tenant->businessId())
                 ->where('status', true)
+                ->whereRaw('(select count(*) from client_guards where client_guards.clientId = clients.id and client_guards.status = 1) < clients.no_guards')
                 ->orderBy('name')
                 ->get(),
             'guards' => SecurityGuard::query()

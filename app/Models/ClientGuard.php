@@ -19,6 +19,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $to
  * @property bool $status
  * @property ScheduleType $schedule_type
+ * @property bool $over_time
  * @property int|null $userId
  * @property int $businessId
  */
@@ -28,6 +29,9 @@ use Illuminate\Support\Carbon;
     'from',
     'to',
     'schedule_type',
+    'over_time',
+    'userId',
+    'businessId',
 ])]
 class ClientGuard extends Model
 {
@@ -36,6 +40,7 @@ class ClientGuard extends Model
     protected $attributes = [
         'status' => true,
         'schedule_type' => 2,
+        'over_time' => false,
     ];
 
     protected function casts(): array
@@ -47,6 +52,7 @@ class ClientGuard extends Model
             'to' => 'date',
             'status' => 'boolean',
             'schedule_type' => ScheduleType::class,
+            'over_time' => 'boolean',
             'userId' => 'integer',
             'businessId' => 'integer',
         ];
@@ -65,5 +71,15 @@ class ClientGuard extends Model
     public function attendances(): HasMany
     {
         return $this->hasMany(ClientGuardAttendance::class, 'deploymentId');
+    }
+
+    public function getNameAttribute(): string
+    {
+        $clientName = $this->client?->name ?? 'Unknown Client';
+        $guardName = $this->securityGuard
+            ? trim(($this->securityGuard->fname ?? '').' '.($this->securityGuard->lname ?? '')).' ('.($this->securityGuard->code ?? '').')'
+            : 'Unknown Guard';
+
+        return "{$clientName} · {$guardName}";
     }
 }

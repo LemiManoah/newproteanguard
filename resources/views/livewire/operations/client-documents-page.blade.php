@@ -20,14 +20,14 @@
         </flux:table.columns>
 
         <flux:table.rows>
-            @foreach ($documents as $document)
-                <flux:table.row :key="$document->id">
-                    <flux:table.cell>{{ $document->client?->name }}</flux:table.cell>
-                    <flux:table.cell>{{ $document->title }}</flux:table.cell>
-                    <flux:table.cell>{{ $document->original_name }}</flux:table.cell>
-                    <flux:table.cell>{{ $document->created_at?->toFormattedDateString() }}</flux:table.cell>
+            @foreach ($documents as $doc)
+                <flux:table.row :key="$doc->id">
+                    <flux:table.cell>{{ $doc->client?->name }}</flux:table.cell>
+                    <flux:table.cell>{{ $doc->title }}</flux:table.cell>
+                    <flux:table.cell>{{ $doc->original_name }}</flux:table.cell>
+                    <flux:table.cell>{{ $doc->created_at?->toFormattedDateString() }}</flux:table.cell>
                     <flux:table.cell>
-                        <flux:button :href="route('client-documents.download', $document)" size="sm">{{ __('Download') }}</flux:button>
+                        <flux:button :href="route('client-documents.download', $doc)" size="sm">{{ __('Download') }}</flux:button>
                     </flux:table.cell>
                 </flux:table.row>
             @endforeach
@@ -41,11 +41,15 @@
                 <flux:text class="mt-2">{{ __('Files are stored on the private client document disk.') }}</flux:text>
             </div>
 
-            <flux:select wire:model="clientId" label="{{ __('Client') }}" placeholder="{{ __('Choose client') }}">
-                @foreach ($clients as $client)
-                    <flux:select.option value="{{ $client->id }}">{{ $client->name }}</flux:select.option>
-                @endforeach
-            </flux:select>
+            <flux:field>
+                <flux:label>{{ __('Client') }}</flux:label>
+                <x-searchable-select
+                    wire:model="clientId"
+                    :options="$clients"
+                    placeholder="Choose client"
+                />
+                <flux:error name="clientId" />
+            </flux:field>
 
             <flux:input wire:model="title" label="{{ __('Title') }}" />
 

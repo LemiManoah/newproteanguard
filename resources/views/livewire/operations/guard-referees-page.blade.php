@@ -22,7 +22,7 @@
         <flux:table.rows>
             @foreach ($referees as $referee)
                 <flux:table.row :key="$referee->id">
-                    <flux:table.cell>{{ $referee->securityGuard?->code }} · {{ trim(($referee->securityGuard?->fname ?? '').' '.($referee->securityGuard?->lname ?? '')) }}</flux:table.cell>
+                    <flux:table.cell>{{ $referee->securityGuard?->code }} - {{ trim(($referee->securityGuard?->fname ?? '').' '.($referee->securityGuard?->lname ?? '')) }}</flux:table.cell>
                     <flux:table.cell>{{ $referee->name }}</flux:table.cell>
                     <flux:table.cell>{{ $referee->contact }}</flux:table.cell>
                     <flux:table.cell>{{ $referee->residence }}</flux:table.cell>
@@ -45,11 +45,15 @@
                 <flux:text class="mt-2">{{ __('Attach a reference contact to a guard.') }}</flux:text>
             </div>
 
-            <flux:select wire:model="guardId" label="{{ __('Guard') }}" placeholder="{{ __('Choose guard') }}">
-                @foreach ($guards as $guard)
-                    <flux:select.option value="{{ $guard->id }}">{{ $guard->code }} · {{ trim($guard->fname.' '.$guard->lname) }}</flux:select.option>
-                @endforeach
-            </flux:select>
+            <flux:field>
+                <flux:label>{{ __('Guard') }}</flux:label>
+                <x-searchable-select
+                    wire:model="guardId"
+                    :options="$guards"
+                    placeholder="Choose guard"
+                />
+                <flux:error name="guardId" />
+            </flux:field>
 
             <flux:input wire:model="name" label="{{ __('Name') }}" />
             <flux:input wire:model="contact" label="{{ __('Contact') }}" />

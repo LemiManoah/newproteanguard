@@ -213,6 +213,29 @@ class LionGuardSeeder extends Seeder
             'userId' => $admin->getKey(),
         ]);
 
+        $client2 = $this->seedModel(Client::class, [
+            'businessId' => $business->getKey(),
+            'name' => 'Nakasero Hospital',
+        ], [
+            'categoryId' => $clientCategory->getKey(),
+            'contact1' => '0755000011',
+            'contact2' => '0755000012',
+            'email' => 'security@nakasero.test',
+            'id_no' => 'CL-002',
+            'tin' => 'TIN-NAKASERO',
+            'vat_no' => 'VAT-NAKASERO',
+            'address' => 'Nakasero, Kampala',
+            'billing_cycle' => BillingCycle::Monthly->value,
+            'amount' => 2200000,
+            'no_guards' => 2,
+            'actual_guards' => 2,
+            'bill_start' => '2026-06-01',
+            'schedule_type' => ScheduleType::FullTime->value,
+            'assigned' => true,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
         $guard = $this->seedModel(SecurityGuard::class, [
             'businessId' => $business->getKey(),
             'code' => 'LG-001',
@@ -250,6 +273,117 @@ class LionGuardSeeder extends Seeder
             'userId' => $admin->getKey(),
         ]);
 
+        $guard2 = $this->seedModel(SecurityGuard::class, [
+            'businessId' => $business->getKey(),
+            'code' => 'LG-002',
+        ], [
+            'code_number' => 2,
+            'fname' => 'Aisha',
+            'lname' => 'Nabukeera',
+            'contact1' => '0701000011',
+            'contact2' => '0701000012',
+            'email' => 'aisha.nabukeera@lionguard.test',
+            'dob' => '1997-08-24',
+            'weight' => 64,
+            'height' => 1.65,
+            'join_date' => '2026-02-03',
+            'gender' => GuardGender::Female->value,
+            'nationality' => 'Ugandan',
+            'religion' => 'Muslim',
+            'tribe' => 'Ganda',
+            'marital_status' => MaritalStatus::Single->value,
+            'address' => 'Kawempe',
+            'home_contact' => '0701000013',
+            'home_location' => 'Masaka',
+            'father_name' => 'Hassan Ssemanda',
+            'mother_name' => 'Rehema Ssemanda',
+            'nok' => 'Mariam Ssemanda',
+            'nok_contact' => '0701000014',
+            'nok_relationship' => 'Sister',
+            'nok_residence' => 'Kawempe',
+            'id_no' => 'CF97000002B',
+            'id_expiry' => '2031-08-31',
+            'languages' => 'English, Luganda',
+            'assigned' => true,
+            'doc_verified' => true,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
+        $guard3 = $this->seedModel(SecurityGuard::class, [
+            'businessId' => $business->getKey(),
+            'code' => 'LG-003',
+        ], [
+            'code_number' => 3,
+            'fname' => 'Michael',
+            'lname' => 'Otim',
+            'contact1' => '0701000021',
+            'contact2' => '0701000022',
+            'email' => 'michael.otim@lionguard.test',
+            'dob' => '1992-11-05',
+            'weight' => 82,
+            'height' => 1.82,
+            'join_date' => '2026-03-15',
+            'gender' => GuardGender::Male->value,
+            'nationality' => 'Ugandan',
+            'religion' => 'Christian',
+            'tribe' => 'Iteso',
+            'marital_status' => MaritalStatus::Married->value,
+            'address' => 'Kireka',
+            'home_contact' => '0701000023',
+            'home_location' => 'Soroti',
+            'father_name' => 'Samuel Otim',
+            'mother_name' => 'Agnes Otim',
+            'nok' => 'Faith Otim',
+            'nok_contact' => '0701000024',
+            'nok_relationship' => 'Spouse',
+            'nok_residence' => 'Kireka',
+            'id_no' => 'CM92000003C',
+            'id_expiry' => '2030-10-31',
+            'languages' => 'English, Ateso, Luganda',
+            'assigned' => true,
+            'doc_verified' => true,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
+        $guard4 = $this->seedModel(SecurityGuard::class, [
+            'businessId' => $business->getKey(),
+            'code' => 'LG-004',
+        ], [
+            'code_number' => 4,
+            'fname' => 'Joseph',
+            'lname' => 'Mugerwa',
+            'contact1' => '0701000031',
+            'contact2' => '0701000032',
+            'email' => 'joseph.mugerwa@lionguard.test',
+            'dob' => '1995-01-19',
+            'weight' => 75,
+            'height' => 1.74,
+            'join_date' => '2026-04-20',
+            'gender' => GuardGender::Male->value,
+            'nationality' => 'Ugandan',
+            'religion' => 'Christian',
+            'tribe' => 'Ganda',
+            'marital_status' => MaritalStatus::Single->value,
+            'address' => 'Makindye',
+            'home_contact' => '0701000033',
+            'home_location' => 'Mukono',
+            'father_name' => 'Paul Mugerwa',
+            'mother_name' => 'Rose Mugerwa',
+            'nok' => 'Allen Mugerwa',
+            'nok_contact' => '0701000034',
+            'nok_relationship' => 'Mother',
+            'nok_residence' => 'Mukono',
+            'id_no' => 'CM95000004D',
+            'id_expiry' => '2032-01-31',
+            'languages' => 'English, Luganda',
+            'assigned' => true,
+            'doc_verified' => true,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
         $deployment = $this->seedModel(ClientGuard::class, [
             'businessId' => $business->getKey(),
             'clientId' => $client->getKey(),
@@ -258,6 +392,42 @@ class LionGuardSeeder extends Seeder
             'from' => '2026-06-01',
             'to' => null,
             'schedule_type' => ScheduleType::FullTime->value,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
+        $this->seedModel(ClientGuard::class, [
+            'businessId' => $business->getKey(),
+            'clientId' => $client->getKey(),
+            'guardId' => $guard2->getKey(),
+        ], [
+            'from' => '2026-06-01',
+            'to' => null,
+            'schedule_type' => ScheduleType::FullTime->value,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
+        $this->seedModel(ClientGuard::class, [
+            'businessId' => $business->getKey(),
+            'clientId' => $client2->getKey(),
+            'guardId' => $guard3->getKey(),
+        ], [
+            'from' => '2026-06-01',
+            'to' => null,
+            'schedule_type' => ScheduleType::Day->value,
+            'status' => true,
+            'userId' => $admin->getKey(),
+        ]);
+
+        $this->seedModel(ClientGuard::class, [
+            'businessId' => $business->getKey(),
+            'clientId' => $client2->getKey(),
+            'guardId' => $guard4->getKey(),
+        ], [
+            'from' => '2026-06-01',
+            'to' => null,
+            'schedule_type' => ScheduleType::Night->value,
             'status' => true,
             'userId' => $admin->getKey(),
         ]);

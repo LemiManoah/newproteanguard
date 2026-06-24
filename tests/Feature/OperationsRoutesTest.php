@@ -4,14 +4,24 @@ use App\Enums\AttendanceStatus;
 use App\Enums\BillingCycle;
 use App\Enums\GuardGender;
 use App\Enums\ScheduleType;
+use App\Livewire\Operations\AddAttendancePage;
 use App\Livewire\Operations\AssignmentsPage;
 use App\Livewire\Operations\AttendancePage;
-use App\Livewire\Operations\AttendanceSummaryPage;
 use App\Livewire\Operations\ClientCategoriesPage;
 use App\Livewire\Operations\ClientDocumentsPage;
 use App\Livewire\Operations\ClientFormPage;
+use App\Livewire\Operations\ExpenseBudgetsPage;
+use App\Livewire\Operations\ExpenseCategoriesPage;
+use App\Livewire\Operations\ExpensesPage;
+use App\Livewire\Operations\GenerateAttendancePage;
+use App\Livewire\Operations\GuardAttendancePage;
 use App\Livewire\Operations\GuardDocumentsPage;
 use App\Livewire\Operations\GuardRefereesPage;
+use App\Livewire\Operations\InventoryCategoriesPage;
+use App\Livewire\Operations\InventoryItemsPage;
+use App\Livewire\Operations\InventoryStockInsPage;
+use App\Livewire\Operations\InventoryStockUsagesPage;
+use App\Livewire\Operations\InventoryUnitsPage;
 use App\Livewire\Operations\SecurityGuardFormPage;
 use App\Models\Business;
 use App\Models\Client;
@@ -19,10 +29,19 @@ use App\Models\ClientCategory;
 use App\Models\ClientDocument;
 use App\Models\ClientGuard;
 use App\Models\ClientGuardAttendance;
+use App\Models\Expense;
+use App\Models\ExpenseBudget;
+use App\Models\ExpenseCategory;
+use App\Models\FinancialYear;
 use App\Models\GuardDocument;
 use App\Models\GuardReferee;
+use App\Models\InventoryCategory;
+use App\Models\InventoryItem;
+use App\Models\InventoryStockUsage;
+use App\Models\PaymentMode;
 use App\Models\Permission;
 use App\Models\SecurityGuard;
+use App\Models\Unit;
 use App\Models\User;
 use Database\Seeders\LionGuardSeeder;
 use Illuminate\Http\UploadedFile;
@@ -50,7 +69,19 @@ test('lionguard admin can access operations livewire pages', function (string $r
     ['guards.undeployed', 'Undeployed Guards'],
     ['assignments.index', 'Guard Assignments'],
     ['attendance.index', 'Client Attendance'],
+    ['attendance.add', 'Assign Guard / Add Attendance'],
     ['attendance.summary', 'Attendance Summary'],
+    ['attendance.guard', 'Attendance by Single Guard'],
+    ['attendance.generate', 'Generate Attendance'],
+    ['expenses.index', 'Fuel for patrol route'],
+    ['expenses.categories', 'Transport'],
+    ['expenses.budgets', 'Transport'],
+    ['inventory.items', 'Security Shirt'],
+    ['inventory.categories', 'Uniforms'],
+    ['inventory.units', 'pcs'],
+    ['inventory.stock-ins', 'Security Shirt'],
+    ['inventory.stock-usages', 'Issued to guard'],
+    ['inventory.movements', 'Issued stock'],
 ]);
 
 test('operations pages require their legacy permissions', function () {
@@ -69,6 +100,8 @@ test('operations pages require their legacy permissions', function () {
         'view_guards' => false,
         'assign_guards' => false,
         'manage_attendance' => false,
+        'view_expenses' => false,
+        'manage_inventory' => false,
     ]);
     $role->save();
 
@@ -87,7 +120,19 @@ test('operations pages require their legacy permissions', function () {
     $this->actingAs($user)->get(route('guards.undeployed'))->assertForbidden();
     $this->actingAs($user)->get(route('assignments.index'))->assertForbidden();
     $this->actingAs($user)->get(route('attendance.index'))->assertForbidden();
+    $this->actingAs($user)->get(route('attendance.add'))->assertForbidden();
     $this->actingAs($user)->get(route('attendance.summary'))->assertForbidden();
+    $this->actingAs($user)->get(route('attendance.guard'))->assertForbidden();
+    $this->actingAs($user)->get(route('attendance.generate'))->assertForbidden();
+    $this->actingAs($user)->get(route('expenses.index'))->assertForbidden();
+    $this->actingAs($user)->get(route('expenses.categories'))->assertForbidden();
+    $this->actingAs($user)->get(route('expenses.budgets'))->assertForbidden();
+    $this->actingAs($user)->get(route('inventory.items'))->assertForbidden();
+    $this->actingAs($user)->get(route('inventory.categories'))->assertForbidden();
+    $this->actingAs($user)->get(route('inventory.units'))->assertForbidden();
+    $this->actingAs($user)->get(route('inventory.stock-ins'))->assertForbidden();
+    $this->actingAs($user)->get(route('inventory.stock-usages'))->assertForbidden();
+    $this->actingAs($user)->get(route('inventory.movements'))->assertForbidden();
 });
 
 test('admin can create client categories in a modal workflow', function () {
@@ -380,4 +425,204 @@ test('admin can record attendance for an active deployment', function () {
         ->where('attended', AttendanceStatus::Absent->value)
         ->where('reason', 'Sick leave')
         ->exists())->toBeTrue();
+});
+
+test('admin can manually add attendance', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+    $client = Client::query()->where('businessId', $user->businessId)->firstOrFail();
+    $guard = SecurityGuard::query()->where('businessId', $user->businessId)->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(AddAttendancePage::class)
+        ->set('clientId', $client->getKey())
+        ->set('guardId', $guard->getKey())
+        ->set('scheduleType', ScheduleType::Day->value)
+        ->set('date', '2026-06-18')
+        ->set('overtime', true)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(ClientGuardAttendance::query()
+        ->where('businessId', $user->businessId)
+        ->where('clientId', $client->getKey())
+        ->where('guardId', $guard->getKey())
+        ->whereDate('date', '2026-06-18')
+        ->where('over_time', true)
+        ->exists())->toBeTrue();
+});
+
+test('admin can record an expense', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+    $category = ExpenseCategory::query()->where('businessId', $user->businessId)->firstOrFail();
+    $mode = PaymentMode::query()->where('businessId', $user->businessId)->firstOrFail();
+    $year = FinancialYear::query()->where('businessId', $user->businessId)->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(ExpensesPage::class)
+        ->call('create')
+        ->set('categoryId', $category->getKey())
+        ->set('modeId', $mode->getKey())
+        ->set('yearId', $year->getKey())
+        ->set('date', '2026-06-19')
+        ->set('amount', '150000')
+        ->set('description', 'Fuel refill')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(Expense::query()
+        ->where('businessId', $user->businessId)
+        ->where('description', 'Fuel refill')
+        ->exists())->toBeTrue();
+});
+
+test('admin can create expense categories and budgets', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+    $year = FinancialYear::query()->where('businessId', $user->businessId)->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(ExpenseCategoriesPage::class)
+        ->call('create')
+        ->set('name', 'Meals')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $category = ExpenseCategory::query()
+        ->where('businessId', $user->businessId)
+        ->where('name', 'Meals')
+        ->firstOrFail();
+
+    Livewire::test(ExpenseBudgetsPage::class)
+        ->call('create')
+        ->set('categoryId', $category->getKey())
+        ->set('yearId', $year->getKey())
+        ->set('amount', '2500000')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(ExpenseBudget::query()
+        ->where('businessId', $user->businessId)
+        ->where('categoryId', $category->getKey())
+        ->where('yearId', $year->getKey())
+        ->where('amount', '2500000')
+        ->exists())->toBeTrue();
+});
+
+test('admin can create inventory categories units and items', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(InventoryCategoriesPage::class)
+        ->call('create')
+        ->set('name', 'Boots')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    Livewire::test(InventoryUnitsPage::class)
+        ->call('create')
+        ->set('symbol', 'pair')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $category = InventoryCategory::query()->where('businessId', $user->businessId)->where('name', 'Boots')->firstOrFail();
+    $unit = Unit::query()->where('businessId', $user->businessId)->where('symbol', 'pair')->firstOrFail();
+
+    Livewire::test(InventoryItemsPage::class)
+        ->call('create')
+        ->set('categoryId', $category->getKey())
+        ->set('unitId', $unit->getKey())
+        ->set('name', 'Guard Boots')
+        ->set('openingStock', '10')
+        ->set('quantity', '10')
+        ->set('buyingPrice', '50000')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect(InventoryItem::query()
+        ->where('businessId', $user->businessId)
+        ->where('name', 'Guard Boots')
+        ->exists())->toBeTrue();
+});
+
+test('admin can record stock in and stock usage', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+    $item = InventoryItem::query()->where('businessId', $user->businessId)->where('name', 'Security Shirt')->firstOrFail();
+    $mode = PaymentMode::query()->where('businessId', $user->businessId)->firstOrFail();
+    $guard = SecurityGuard::query()->where('businessId', $user->businessId)->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(InventoryStockInsPage::class)
+        ->call('clearCart')
+        ->set('itemId', $item->getKey())
+        ->set('quantity', '2')
+        ->set('buyingPrice', '36000')
+        ->call('addToCart')
+        ->assertHasNoErrors()
+        ->set('paymentMode', $mode->getKey())
+        ->set('date', '2026-06-20')
+        ->set('paid', '72000')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect((float) $item->refresh()->quantity)->toBe(22.0);
+
+    Livewire::test(InventoryStockUsagesPage::class)
+        ->call('create')
+        ->set('itemId', $item->getKey())
+        ->set('guardId', $guard->getKey())
+        ->set('date', '2026-06-20')
+        ->set('quantity', '1')
+        ->set('description', 'Issued replacement shirt')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect((float) $item->refresh()->quantity)->toBe(21.0)
+        ->and(InventoryStockUsage::query()
+            ->where('businessId', $user->businessId)
+            ->where('description', 'Issued replacement shirt')
+            ->exists())->toBeTrue();
+});
+
+test('admin can delete guard attendance', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+    $attendance = ClientGuardAttendance::query()->where('businessId', $user->businessId)->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(GuardAttendancePage::class)
+        ->set('guardId', $attendance->guardId)
+        ->call('delete', $attendance->getKey())
+        ->assertHasNoErrors();
+
+    expect(ClientGuardAttendance::query()->find($attendance->getKey()))->toBeNull();
+});
+
+test('admin can generate attendance over date range', function () {
+    $this->seed(LionGuardSeeder::class);
+
+    $user = User::query()->where('email', 'admin@lionguard.test')->firstOrFail();
+
+    $this->actingAs($user);
+
+    Livewire::test(GenerateAttendancePage::class)
+        ->set('startDate', '2026-06-15')
+        ->set('endDate', '2026-06-17')
+        ->call('generate')
+        ->assertHasNoErrors();
 });

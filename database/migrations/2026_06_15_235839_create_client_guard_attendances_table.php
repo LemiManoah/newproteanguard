@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('replacedBy')->nullable()->constrained('security_guards')->nullOnDelete();
             $table->date('date')->nullable()->index();
             $table->integer('schedule_type')->default(2)->comment('0=day, 1=night, 2=full time');
+            $table->boolean('over_time')->default(false);
             $table->integer('attended')->default(1)->comment('0=absent, 1=present, 2=replaced');
             $table->integer('absentCategory')->nullable()->comment('0=sick, 1=leave, 2=special duty, 3=unknown');
             $table->string('reason')->nullable();

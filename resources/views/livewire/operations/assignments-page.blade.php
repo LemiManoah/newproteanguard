@@ -5,19 +5,28 @@
     </div>
 
     <form wire:submit="assign" class="grid gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700 lg:grid-cols-5">
-        <flux:select wire:model="clientId" label="{{ __('Client') }}" placeholder="{{ __('Choose client') }}">
-            @foreach ($clients as $client)
-                <flux:select.option value="{{ $client->id }}">{{ $client->name }}</flux:select.option>
-            @endforeach
-        </flux:select>
+        <flux:field>
+            <flux:label>{{ __('Client') }}</flux:label>
+            <x-searchable-select
+                wire:model="clientId"
+                :options="$clients"
+                placeholder="Choose client"
+            />
+            <flux:error name="clientId" />
+        </flux:field>
 
-        <flux:select wire:model="guardId" label="{{ __('Guard') }}" placeholder="{{ __('Choose guard') }}">
-            @foreach ($guards as $guard)
-                <flux:select.option value="{{ $guard->id }}">{{ $guard->code }} · {{ trim($guard->fname.' '.$guard->lname) }}</flux:select.option>
-            @endforeach
-        </flux:select>
+        <flux:field>
+            <flux:label>{{ __('Guard') }}</flux:label>
+            <x-searchable-select
+                wire:model="guardId"
+                :options="$guards"
+                placeholder="Choose guard"
+            />
+            <flux:error name="guardId" />
+        </flux:field>
 
-        <flux:select wire:model="scheduleType" label="{{ __('Schedule') }}">
+        <flux:select wire:model="scheduleType" label="{{ __('Schedule') }}" placeholder="{{ __('Choose schedule') }}">
+            <flux:select.option value="">{{ __('Choose schedule') }}</flux:select.option>
             @foreach ($scheduleTypes as $scheduleType)
                 <flux:select.option value="{{ $scheduleType->value }}">{{ $scheduleType->label() }}</flux:select.option>
             @endforeach
@@ -43,7 +52,7 @@
             @foreach ($deployments as $deployment)
                 <flux:table.row :key="$deployment->id">
                     <flux:table.cell>{{ $deployment->client?->name }}</flux:table.cell>
-                    <flux:table.cell>{{ $deployment->securityGuard?->code }} · {{ trim(($deployment->securityGuard?->fname ?? '').' '.($deployment->securityGuard?->lname ?? '')) }}</flux:table.cell>
+                    <flux:table.cell>{{ $deployment->securityGuard?->code }} - {{ trim(($deployment->securityGuard?->fname ?? '').' '.($deployment->securityGuard?->lname ?? '')) }}</flux:table.cell>
                     <flux:table.cell>{{ $deployment->from?->toFormattedDateString() }}</flux:table.cell>
                     <flux:table.cell>{{ $deployment->schedule_type?->label() }}</flux:table.cell>
                     <flux:table.cell>{{ $deployment->status ? __('Active') : __('Inactive') }}</flux:table.cell>

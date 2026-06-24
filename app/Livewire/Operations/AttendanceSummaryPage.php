@@ -3,20 +3,25 @@
 namespace App\Livewire\Operations;
 
 use App\Enums\AttendanceStatus;
-use App\Models\ClientGuardAttendance;
+use App\Models\SecurityGuard;
 use App\Services\PermissionService;
 use App\Support\TenantContext;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Title('Attendance Summary')]
 class AttendanceSummaryPage extends Component
 {
+    use WithPagination;
+
     public ?string $from = null;
 
     public ?string $to = null;
+
+    public ?string $search = null;
 
     protected TenantContext $tenant;
 
@@ -30,27 +35,66 @@ class AttendanceSummaryPage extends Component
 
     public function mount(): void
     {
-        $this->from = now()->startOfMonth()->toDateString();
+        $this->from = now()->toDateString();
         $this->to = now()->toDateString();
+    }
+
+    public function updated($property): void
+    {
+        if (in_array($property, ['from', 'to', 'search'], true)) {
+            $this->resetPage();
+        }
     }
 
     public function render(): View
     {
         abort_unless($this->permissions->can($this->tenant->user(), 'manage_attendance'), Response::HTTP_FORBIDDEN);
 
-        $rows = ClientGuardAttendance::query()
-            ->with(['client', 'securityGuard'])
+        $from = $this->from ?: now()->toDateString();
+        $to = $this->to ?: $from;
+
+        if ($from > $to) {
+            [$from, $to] = [$to, $from];
+        }
+
+        $guards = SecurityGuard::query()
             ->where('businessId', $this->tenant->businessId())
-            ->when($this->from, fn ($query) => $query->whereDate('date', '>=', $this->from))
-            ->when($this->to, fn ($query) => $query->whereDate('date', '<=', $this->to))
-            ->latest('date')
-            ->get();
+            ->when($this->search, function ($query): void {
+                $search = '%'.trim((string) $this->search).'%';
+
+                $query->where(function ($query) use ($search): void {
+                    $query
+                        ->where('code', 'like', $search)
+                        ->orWhere('fname', 'like', $search)
+                        ->orWhere('lname', 'like', $search);
+                });
+            })
+            ->whereHas('attendances', function ($query) use ($from, $to): void {
+                $query
+                    ->whereBetween('date', [$from, $to])
+                    ->where('attended', AttendanceStatus::Present->value);
+            })
+            ->withCount([
+                'attendances as worked_count' => function ($query) use ($from, $to): void {
+                    $query
+                        ->whereBetween('date', [$from, $to])
+                        ->where('attended', AttendanceStatus::Present->value)
+                        ->where('over_time', false);
+                },
+                'attendances as overtime_count' => function ($query) use ($from, $to): void {
+                    $query
+                        ->whereBetween('date', [$from, $to])
+                        ->where('attended', AttendanceStatus::Present->value)
+                        ->where('over_time', true);
+                },
+            ])
+            ->orderBy('fname')
+            ->paginate(15);
 
         return view('livewire.operations.attendance-summary-page', [
-            'rows' => $rows,
-            'presentCount' => $rows->filter(fn (ClientGuardAttendance $row): bool => $row->attended === AttendanceStatus::Present)->count(),
-            'absentCount' => $rows->filter(fn (ClientGuardAttendance $row): bool => $row->attended === AttendanceStatus::Absent)->count(),
-            'replacedCount' => $rows->filter(fn (ClientGuardAttendance $row): bool => $row->attended === AttendanceStatus::Replaced)->count(),
+            'guards' => $guards,
+            'from' => $from,
+            'to' => $to,
         ]);
     }
 }

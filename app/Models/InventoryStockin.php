@@ -44,6 +44,11 @@ class InventoryStockin extends Model
         return $this->belongsTo(PaymentMode::class, 'paymentMode');
     }
 
+    public function mode(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMode::class, 'paymentMode');
+    }
+
     public function details(): HasMany
     {
         return $this->hasMany(StockInDetail::class, 'stockInId');

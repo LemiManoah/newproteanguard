@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('to')->nullable()->index();
             $table->boolean('status')->default(true)->index();
             $table->integer('schedule_type')->default(2)->comment('0=day, 1=night, 2=full time');
+            $table->boolean('over_time')->default(false);
             $table->foreignId('userId')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('businessId')->constrained('businesses')->cascadeOnDelete();
             $table->timestamps();
